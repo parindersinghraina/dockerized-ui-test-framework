@@ -29,6 +29,7 @@ pipeline {
     post {
         always {
             sh '/usr/local/bin/docker-compose down'
+            sh 'docker rm $(docker ps -a -q) && docker rmi $(docker images -a -q)'
         }
     }
 }
