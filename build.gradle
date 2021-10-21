@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation "org.seleniumhq.selenium:selenium-java:3.141.59"
+    testImplementation "org.seleniumhq.selenium:selenium-chrome-driver:3.141.59"
+    testImplementation "org.seleniumhq.selenium:selenium-firefox-driver:3.141.59"
+    testImplementation "org.testng:testng:6.14.3"
+}
+
+test {
+    useTestNG() {
+        useDefaultListeners = false // report generation delegated to TestNG library
+        suites 'src/test/resources/suites/' + System.getProperty('AUTOMATED_TEST_SUITE', 'all') + '.xml'
+        // defaults to 'all' suite
+    }
+
+    testLogging {
+        events "PASSED", "FAILED", "SKIPPED" //we want display the following test events
+    }
+
+    reports.html.enabled = false // disabled gradle reports so they do not overwrite the testNG ones
+
+}

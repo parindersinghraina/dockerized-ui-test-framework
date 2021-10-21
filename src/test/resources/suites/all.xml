@@ -1,0 +1,7 @@
+<suite name="all" verbose="1" parallel="methods" thread-count="5">
+    <test name="ui">
+        <packages>
+            <package name="com.dockerized.ui.tests.*"/>
+        </packages>
+    </test>
+</suite>

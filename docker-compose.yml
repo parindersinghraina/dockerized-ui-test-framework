@@ -1,0 +1,95 @@
+version: "3"
+services:
+  chrome-1:
+    image: seleniarm/node-chromium:4.0.0-beta-1-20210215
+    volumes:
+      - /dev/shm:/dev/shm
+    logging:
+      driver: none
+    depends_on:
+      - seleniarm-hub
+    environment:
+      - SE_EVENT_BUS_HOST=seleniarm-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - NODE_MAX_INSTANCES=10
+      - NODE_MAX_SESSION=10
+    ports:
+      - "6900:5900"
+  chrome-2:
+    image: seleniarm/node-chromium:4.0.0-beta-1-20210215
+    volumes:
+      - /dev/shm:/dev/shm
+    logging:
+      driver: none
+    depends_on:
+      - seleniarm-hub
+    environment:
+      - SE_EVENT_BUS_HOST=seleniarm-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - NODE_MAX_INSTANCES=10
+      - NODE_MAX_SESSION=10
+    ports:
+      - "6901:5900"
+
+  chrome-3:
+    image: seleniarm/node-chromium:4.0.0-beta-1-20210215
+    volumes:
+      - /dev/shm:/dev/shm
+    logging:
+      driver: none
+    depends_on:
+      - seleniarm-hub
+    environment:
+      - SE_EVENT_BUS_HOST=seleniarm-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - NODE_MAX_INSTANCES=10
+      - NODE_MAX_SESSION=10
+    ports:
+      - "6902:5900"
+
+  firefox:
+    image: seleniarm/node-firefox:4.0.0-beta-1-20210215
+    volumes:
+      - /dev/shm:/dev/shm
+    logging:
+      driver: none
+    depends_on:
+      - seleniarm-hub
+    environment:
+      - SE_EVENT_BUS_HOST=seleniarm-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - NODE_MAX_INSTANCES=10
+      - NODE_MAX_SESSION=10
+    ports:
+      - "7900:5900"
+
+  seleniarm-hub:
+    image: seleniarm/hub:4.0.0-beta-1-20210215
+    container_name: hub
+    logging:
+      driver: none
+    environment:
+      - GRID_MAX_SESSION=10
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+
+  test_runner:
+    image: amazoncorretto:11
+    volumes:
+      - .:/tests
+    working_dir: /tests
+    environment:
+      - AUTOMATED_TEST_ENV_CONFIG=stagging
+      - AUTOMATED_TEST_WD_CONFIG=docker-compose
+      - AUTOMATED_TEST_SUITE=all
+    command: bash -c "./gradlew clean build -DAUTOMATED_TEST_SUITE=$${AUTOMATED_TEST_SUITE}; chmod -R 777 build"
+    depends_on:
+      - chrome
+      - firefox
+      - seleniarm-hub
